@@ -1,0 +1,167 @@
+version: '3'
+
+
+services: 
+  tower-db:
+    image: postgres:alpine
+    container_name: tower-db
+    restart: always
+    environment:
+      - POSTGRES_DB=${TOWER_POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 1s
+      timeout: 1s
+      retries: 15
+    volumes:
+      - tower-db-data:/var/lib/postgresql/data
+  
+
+  tower:
+    container_name: tower
+    build:
+      context: https://github.com/aseca-furious-5/control-tower.git
+      dockerfile: Dockerfile
+      target: dev
+    restart: always
+    depends_on:
+      - tower-db
+    links:
+      - tower-db
+    ports:
+      - '3000:3000'
+    environment:
+      - DATABASE_URL=${TOWER_DATABASE_URL}
+
+  inventory-db:
+    image: postgres:alpine
+    container_name: inventory-db
+    restart: always
+    environment:
+      - POSTGRES_DB=${INVENTORY_POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - '5434:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 1s
+      timeout: 1s
+      retries: 15
+    volumes:
+      - inventory-db-data:/var/lib/postgresql/data
+
+  inventory:
+    container_name: inventory
+    build:
+      context: https://github.com/aseca-furious-5/inventory-api.git
+      dockerfile: Dockerfile
+      target: dev
+    restart: always
+    depends_on:
+      - inventory-db
+    links:
+      - inventory-db
+    ports:
+      - '3004:3000'
+    environment:
+      - DATABASE_URL=${INVENTORY_DATABASE_URL}
+    
+  warehouse-db:
+    image: postgres:alpine
+    container_name: warehouse-db
+    restart: always
+    environment:
+      - POSTGRES_DB=${WAREHOUSE_POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - '5433:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 1s
+      timeout: 1s
+      retries: 15
+    volumes:
+      - inventory-db-data:/var/lib/postgresql/data
+
+  warehouse:
+    container_name: warehouse
+    build:
+      context: https://github.com/aseca-furious-5/warehouse-api.git
+      dockerfile: Dockerfile
+      target: dev
+    restart: always
+    depends_on:
+      - warehouse-db
+    links:
+      - warehouse-db
+    ports:
+      - '3005:3000'
+    environment:
+      - DATABASE_URL=${WAREHOUSE_DATABASE_URL}
+  
+  delivery-db:
+    image: postgres:alpine
+    container_name: delivery-db
+    restart: always
+    environment:
+      - POSTGRES_DB=${DELIVERY_POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - '5435:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 1s
+      timeout: 1s
+      retries: 15
+    volumes:
+      - delivery-db-data:/var/lib/postgresql/data
+
+  delivery:
+    container_name: delivery
+    build:
+      context: https://github.com/aseca-furious-5/delivery-api.git
+      dockerfile: Dockerfile
+      target: dev
+    restart: always
+    depends_on:
+      - delivery-db
+    links:
+      - delivery-db
+    ports:
+      - '3006:3000'
+    environment:
+      - DATABASE_URL=${DELIVERY_DATABASE_URL}
+
+  store:
+    container_name: store
+    build:
+      context: https://github.com/aseca-furious-5/store.git
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - '3001:3000'
+  
+  warehouse-web:
+    container_name: warehouse-web
+    build:
+      context: https://github.com/aseca-furious-5/warehouse-web.git
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - '3002:3000'
+
+
+
+volumes:
+  tower-db-data:
+  inventory-db-data:
+  warehouse-db-data:
+  delivery-db-data:
+  
