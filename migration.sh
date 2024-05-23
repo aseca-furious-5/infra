@@ -1,6 +1,6 @@
 #!/bin/bash
 
-container_names=("tower" "delivery" "store" "warehouse")
+container_names=("tower" "delivery" "inventory" "warehouse")
 
 for container_name in "${container_names[@]}"; do
     if docker inspect -f '{{.State.Running}}' "$container_name" >/dev/null 2>&1; then
