@@ -101,7 +101,7 @@ services:
     links:
       - warehouse-db
     ports:
-      - '3005:3000'
+      - '3005:3100'
     environment:
       - DATABASE_URL=${WAREHOUSE_DATABASE_URL}
   
@@ -158,8 +158,19 @@ services:
     restart: always
     ports:
       - '3002:3000'
+    environment:
+      - REACT_APP_WAREHOUSE_API_URL=${REACT_APP_WAREHOUSE_API_URL}
 
-
+  inventory-web:
+    container_name: inventory-web
+    build:
+      context: https://github.com/aseca-furious-5/inventory-web.git
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - '3003:3000'
+    environment:
+        - REACT_APP_INVENTORY_API_URL=${REACT_APP_INVENTORY_API_URL}
 
 volumes:
   tower-db-data:
