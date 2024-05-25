@@ -147,6 +147,8 @@ services:
     restart: always
     ports:
       - '3001:3000'
+    environment:
+      - REACT_APP_CONTROL_TOWER_URL=${REACT_APP_CONTROL_TOWER_URL}
   
   warehouse-web:
     container_name: warehouse-web
