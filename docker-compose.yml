@@ -91,7 +91,7 @@ services:
       timeout: 1s
       retries: 15
     volumes:
-      - inventory-db-data:/var/lib/postgresql/data
+      - warehouse-db-data:/var/lib/postgresql/data
 
   warehouse:
     container_name: warehouse
@@ -177,6 +177,17 @@ services:
       - '3003:3000'
     environment:
         - REACT_APP_INVENTORY_API_URL=${REACT_APP_INVENTORY_API_URL}
+
+  delivery-web:
+    container_name: delivery-web
+    build:
+      context: https://github.com/aseca-furious-5/delivery-web.git
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - '3007:3000'
+    environment:
+        - REACT_APP_DELIVERY_API_URL=${REACT_APP_DELIVERY_API_URL}
 
 volumes:
   tower-db-data:
