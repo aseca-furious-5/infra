@@ -36,6 +36,9 @@ services:
       - '3000:3000'
     environment:
       - DATABASE_URL=${TOWER_DATABASE_URL}
+      - INVENTORY_URL=${INVENTORY_URL}
+      - WAREHOUSE_URL=${WAREHOUSE_URL}
+      - DELIVERY_SERVICE_URL=${DELIVERY_SERVICE_URL}
 
   inventory-db:
     image: postgres:alpine
@@ -70,6 +73,7 @@ services:
       - '3004:3000'
     environment:
       - DATABASE_URL=${INVENTORY_DATABASE_URL}
+      - CONTROL_TOWER_URL=${CONTROL_TOWER_URL}
     
   warehouse-db:
     image: postgres:alpine
@@ -104,6 +108,7 @@ services:
       - '3005:3100'
     environment:
       - DATABASE_URL=${WAREHOUSE_DATABASE_URL}
+      - CONTROL_TOWER_URL=${CONTROL_TOWER_URL}
   
   delivery-db:
     image: postgres:alpine
@@ -138,6 +143,7 @@ services:
       - '3006:3000'
     environment:
       - DATABASE_URL=${DELIVERY_DATABASE_URL}
+      - CONTROL_TOWER_URL=${CONTROL_TOWER_URL}
 
   store:
     container_name: store
